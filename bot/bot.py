@@ -2,6 +2,7 @@ import asyncio
 
 from aiogram import Bot, Dispatcher, types as t
 from aiogram.filters.command import Command
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from loguru import logger
 
 from config import config
@@ -21,11 +22,32 @@ async def cmd_start(message: t.Message):
         return 
 
     user_in_base = get_user_by_username(username)
+    builder = InlineKeyboardBuilder()
+    response = None
 
     if user_in_base:
-        await message.answer("Ник найден!")
+        web_app = t.WebAppInfo(url=config.web_app_link)
+
+        builder.row(
+            t.InlineKeyboardButton(
+                text='Аппка',
+                web_app=web_app
+            )
+        )
+
+        response = "Вот ссылка на аппку"
     else:
-        await message.answer("Ник не найден")
+        builder.row(
+            t.InlineKeyboardButton(
+                text='Cсылка',
+                url=config.login_link
+            )
+        )
+
+        response = "Зарегистрируйтесь по ссылке"
+
+    await message.answer(response, reply_markup=builder.as_markup())
+
 
     
 

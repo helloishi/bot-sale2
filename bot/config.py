@@ -3,8 +3,9 @@ from pydantic import SecretStr
 
 class BotSettings(BaseSettings):
     bot_token: SecretStr
-    redirect_link: str
-    
+    login_link: str
+    web_app_link: str
+
     class Config:
         env_file = '.env'
         env_file_encoding = 'utf-8'

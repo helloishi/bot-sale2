@@ -9,4 +9,16 @@ class BotSettings(BaseSettings):
         env_file = '.env'
         env_file_encoding = 'utf-8'
 
+class DBSettings(BaseSettings):
+    db_host: str
+    db_name: str
+    db_port: int
+    db_user: str
+    db_pass: SecretStr
+
+    class Config:
+        env_file = '.env'
+        env_file_encoding = 'utf-8'
+
 config = BotSettings()
+db_config = DBSettings()

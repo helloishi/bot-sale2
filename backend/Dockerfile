@@ -23,6 +23,3 @@ COPY . /app/
 
 # Expose port 8000
 EXPOSE 8000
-
-# Define the default command to run when starting the container
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

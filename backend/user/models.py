@@ -4,6 +4,7 @@ from django.utils.translation import gettext as _
 
 from backend.models import DateMixin
 
+
 class UserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
@@ -28,14 +29,19 @@ class UserManager(BaseUserManager):
 
         return self.create_user(username, email, password, **extra_fields)
 
+
 class User(AbstractUser, DateMixin):
     username = models.CharField(_("Юзернейм"), max_length=60, unique=True)
     first_name = models.CharField(_("Имя"), max_length=60)
     last_name = models.CharField(_("Фамилия"), max_length=60)
     email = models.CharField(_("Почта"), max_length=60)
-
+    fav_places = models.ManyToManyField("discounts.Place", verbose_name=_("Избранные места"))
 
     objects = UserManager()
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
 
     def __str__(self):
         return self.username

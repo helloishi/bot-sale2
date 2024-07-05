@@ -35,7 +35,7 @@ class User(AbstractUser, DateMixin):
     first_name = models.CharField(_("Имя"), max_length=60)
     last_name = models.CharField(_("Фамилия"), max_length=60)
     email = models.CharField(_("Почта"), max_length=60)
-    fav_places = models.ManyToManyField("discounts.Place", verbose_name=_("Избранные места"))
+    fav_discounts = models.ManyToManyField("discounts.Discount", verbose_name=_("Избранные скидки"), blank=True)
 
     objects = UserManager()
 

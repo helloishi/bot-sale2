@@ -36,8 +36,10 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'subscription.apps.SubscriptionConfig',
     'discounts.apps.DiscountsConfig',
     'user.apps.UserConfig',
+    'django_filters',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -90,6 +92,12 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'db'),  # Use 'db' as the default host which matches the service name in docker-compose
         'PORT': os.getenv('DB_PORT', '5432'),  # Default PostgreSQL port
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
 }
 
 

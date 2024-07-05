@@ -17,6 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from subscription.urls import urlpatterns as subscription_urls
+from discounts.urls import urlpatterns as discount_urls
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += subscription_urls
+urlpatterns += discount_urls

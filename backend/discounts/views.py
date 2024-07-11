@@ -5,12 +5,12 @@ from rest_framework.response import Response
 
 from user.models import User
 from .models import Discount
-from .serializers import DiscountSerializer, AddFavoriteDiscountSerializer
+from .serializers import DiscountSerializer, FavoriteDiscountSerializer
 from .filters import DiscountFilter
 
 class AddFavoriteDiscountView(APIView):
     def post(self, request, username, *args, **kwargs):
-        serializer = AddFavoriteDiscountSerializer(data=request.data)
+        serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
             discount_id = serializer.validated_data['discount_id']
             try:
@@ -26,6 +26,26 @@ class AddFavoriteDiscountView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RemoveFavoriteDiscountView(APIView):
+    def post(self, request, username, *args, **kwargs):
+        serializer = FavoriteDiscountSerializer(data=request.data)
+        if serializer.is_valid():
+            discount_id = serializer.validated_data['discount_id']
+            try:
+                user = User.objects.get(username=username)
+                discount = Discount.objects.get(id=discount_id)
+            except User.DoesNotExist:
+                return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            except Discount.DoesNotExist:
+                return Response({"detail": "Discount not found."}, status=status.HTTP_404_NOT_FOUND)
+
+            if discount in user.fav_discounts.all():
+                user.fav_discounts.remove(discount)
+                return Response({"detail": "Discount removed from favorites."}, status=status.HTTP_200_OK)
+            else:
+                return Response({"detail": "Discount not in favorites."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class DiscountListCreateAPIView(generics.ListCreateAPIView):
     queryset = Discount.objects.all()

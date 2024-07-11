@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Discount
 
-class AddFavoriteDiscountSerializer(serializers.Serializer):
+class FavoriteDiscountSerializer(serializers.Serializer):
     discount_id = serializers.IntegerField()
 
 class DiscountSerializer(serializers.ModelSerializer):

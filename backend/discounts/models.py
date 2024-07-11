@@ -28,4 +28,4 @@ class Discount(DateMixin):
         return start_date >= datetime.now().date() < end_date
 
     def __str__(self):
-        return f'Скидка в {self.place.name}'
+        return f'Скидка в {self.place}'

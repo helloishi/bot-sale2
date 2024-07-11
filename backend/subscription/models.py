@@ -2,6 +2,7 @@ from datetime import datetime
 
 from django.utils.translation import gettext_lazy as _
 from django.db import models
+
 from backend.models import DateMixin
 
 class Subscription(models.Model):
@@ -16,7 +17,7 @@ class Subscription(models.Model):
 
     @property
     def is_active(self):
-        return self.start_date < datetime.now() < self.end_date and not self.stopped
+        return (self.start_date <= datetime.now().date() < self.end_date) and not self.stopped
 
     def __str__(self):
         return f"Подписка {self.client.username} до {self.end_date}"

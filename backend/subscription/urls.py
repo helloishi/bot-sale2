@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import SubscriptionListCreateAPIView, SubscriptionDetailAPIView
+from .views import *
 
 urlpatterns = [
-    path('subscriptions/', SubscriptionListCreateAPIView.as_view(), name='subscription_list_create'),
-    path('subscriptions/<int:pk>/', SubscriptionDetailAPIView.as_view(), name='subscription_detail'),
+    path('', SubscriptionListCreateAPIView.as_view(), name='subscription_list_create'),
+    path('<int:pk>/', SubscriptionDetailAPIView.as_view(), name='subscription_detail'),
+    path('active/', ActiveSubscriptionListView.as_view(), name='active-subscription-list'),
+    path('check/<str:username>/', CheckActiveSubscriptionView.as_view(), name='check-active-subscription'),
 ]

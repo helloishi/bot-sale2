@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from subscription.urls import urlpatterns as subscription_urls
 from discounts.urls import urlpatterns as discount_urls
@@ -23,7 +23,8 @@ from discounts.urls import urlpatterns as discount_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('auth/', include('user.urls')),
+    path('payment/', include('payment.urls')),
+    path('subscriptions/', include('subscription.urls')),
+    path('discounts/', include('discounts.urls'))
 ]
-
-urlpatterns += subscription_urls
-urlpatterns += discount_urls

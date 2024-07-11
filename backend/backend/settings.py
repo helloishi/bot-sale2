@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'subscription.apps.SubscriptionConfig',
     'discounts.apps.DiscountsConfig',
     'user.apps.UserConfig',
+    'payment.apps.PaymentConfig',
     'django_filters',
     'rest_framework',
     'django.contrib.admin',
@@ -98,6 +99,10 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
     ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+    # 'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication',
+]
 }
 
 
@@ -132,7 +137,6 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'user.User'
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

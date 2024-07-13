@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'fav_discounts', 'mobile_phone']
+        fields = ['id', 'username', 'name', 'email', 'fav_discounts', 'mobile_phone']
 
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
@@ -23,8 +23,6 @@ class MobilePhoneChangeSerializer(serializers.Serializer):
     mobile_phone = serializers.CharField(required=True, max_length=11)
 
     def validate_mobile_phone(self, value):
-        if not value.isdigit() or len(value) != 11:
-            raise serializers.ValidationError("Mobile phone number must be 11 digits.")
         return value
 
 class UsernameChangeSerializer(serializers.Serializer):
@@ -40,15 +38,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'mobile_phone']
+        fields = ['username', 'name', 'email', 'password', 'mobile_phone']
 
     def create(self, validated_data):
         user = User.objects.create_user(
             username=validated_data['username'],
             email=validated_data['email'],
             password=validated_data['password'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
+            name=validated_data['name'],
             mobile_phone=validated_data['mobile_phone'],
         )
         return user

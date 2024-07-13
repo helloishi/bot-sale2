@@ -34,14 +34,10 @@ class User(AbstractUser, DateMixin):
     username = models.CharField(_("Юзернейм"), max_length=60, unique=True)
     name = models.CharField(_("Имя"), max_length=100, default='')
     email = models.CharField(_("Почта"), max_length=60)
-    mobile_phone = models.CharField(_("Номер телефона (с 8)"), max_length=11, blank=True)
+    mobile_phone = models.CharField(_("Номер телефона (с 8)"), max_length=50, blank=True)
     fav_discounts = models.ManyToManyField("discounts.Discount", verbose_name=_("Избранные скидки"), blank=True)
 
     objects = UserManager()
-
-    @property
-    def full_name(self):
-        return f"{self.first_name} {self.last_name}"
 
     def __str__(self):
         return self.username

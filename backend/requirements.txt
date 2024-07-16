@@ -8,10 +8,12 @@ django-excel-response2==3.0.6
 django-filter==24.2
 django-six==1.0.5
 djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.1
 excel-base==1.0.4
 idna==3.7
 isoweek==1.3.3
 psycopg2-binary==2.9.9
+PyJWT==2.8.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 requests==2.32.3

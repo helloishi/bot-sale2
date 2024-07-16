@@ -2,13 +2,16 @@ from rest_framework import generics, status
 from django_filters import rest_framework as filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from user.models import User
 from .models import Discount
-from .serializers import DiscountSerializer, FavoriteDiscountSerializer
+from .serializers import *
 from .filters import DiscountFilter
 
 class AddFavoriteDiscountView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, username, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
@@ -27,6 +30,8 @@ class AddFavoriteDiscountView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveFavoriteDiscountView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, username, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
@@ -46,6 +51,13 @@ class RemoveFavoriteDiscountView(APIView):
                 return Response({"detail": "Discount not in favorites."}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserFavoriteDiscountsView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    lookup_field = 'username'
 
 class DiscountListCreateAPIView(generics.ListCreateAPIView):
     queryset = Discount.objects.all()

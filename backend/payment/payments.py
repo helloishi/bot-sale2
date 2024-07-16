@@ -4,10 +4,13 @@ import requests
 import base64
 from dotenv import load_dotenv
 
+from django.http import HttpResponseRedirect
+from rest_framework import status
+
 load_dotenv()
 
 class CloudPayments:
-    def __init__(self, public_id, api_secret):
+    def __init__(self):
         self.public_id = os.environ.get("PAYMENT_API_ID")
         self.api_secret = os.environ.get("PAYMENT_API_PASS")
         self.base_url = "https://api.cloudpayments.ru/"
@@ -31,7 +34,24 @@ class CloudPayments:
                             auth=requests.auth.HTTPBasicAuth(self.public_id, self.api_secret))
 
         
-        if response.status_code in (200, 201):
-            return response.json()
+        if not 'application/json' in response.headers.get('Content-Type', ''):
+            return {"error": "Couldn't fetch the data from payment"}, status.HTTP_400_BAD_REQUEST
 
-        return {}
+        response_data = response.json()
+        model = response_data.get("Model", {})
+
+        if model.get("PaReq") and model.get("AcsUrl"):
+            pa_req = model.get("PaReq")
+            acs_url = model.get("AcsUrl")
+
+            _3ds_request = requests.post(acs_url, json={
+                "PaReq": pa_req, 
+                "MD": model.get("TransactionId") 
+            })
+
+            return _3ds_request, status.HTTP_200_OK
+
+        if response_data.get("Success"):
+            return response_data, status.HTTP_200_OK
+
+        return response_data, status.HTTP_400_BAD_REQUEST

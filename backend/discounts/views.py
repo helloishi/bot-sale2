@@ -52,12 +52,15 @@ class RemoveFavoriteDiscountView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserFavoriteDiscountsView(generics.RetrieveAPIView):
+class UserFavoriteDiscountsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    lookup_field = 'username'
+    def get(self, request, username, *args, **kwargs):
+        user = request.user
+        favorite_discounts = user.fav_discounts.all()
+        serializer = DiscountSerializer(favorite_discounts, many=True)
+        
+        return Response(serializer.data)
 
 class DiscountListCreateAPIView(generics.ListCreateAPIView):
     queryset = Discount.objects.all()

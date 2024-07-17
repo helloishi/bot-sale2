@@ -22,6 +22,7 @@ class Discount(DateMixin):
 
     image = models.ImageField(_("Картинка"), upload_to='images', blank=True)
     description = models.TextField(_("Описание"))
+    address_txt = models.CharField(_(""), max_length=100, blank=True)
     start_date = models.DateField(_("Дата начала скидки"), auto_now=False, auto_now_add=False)
     end_date = models.DateField(_("Дата конца скидки"), auto_now=False, auto_now_add=False)
     place_type = models.CharField(_("Тип заведения"), max_length=4, choices=PlaceType.choices, blank=True)

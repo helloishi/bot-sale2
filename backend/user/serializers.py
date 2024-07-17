@@ -20,7 +20,7 @@ class PasswordChangeSerializer(serializers.Serializer):
         return value
 
 class MobilePhoneChangeSerializer(serializers.Serializer):
-    mobile_phone = serializers.CharField(required=True, max_length=11)
+    mobile_phone = serializers.CharField(required=True)
 
     def validate_mobile_phone(self, value):
         return value

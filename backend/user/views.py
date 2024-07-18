@@ -1,3 +1,5 @@
+import re
+
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -37,14 +39,22 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
+        if 'username' in request.data:
+            username = request.data['username']
+
+            username = username.replace("@", "")
+            match = re.match(r't\.me\/(\w+)', username)
+            
+            if match:
+                username = match.group(1)
+
+            request.data['username'] = username
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        try:
-            user = serializer.save()
-        except IntegrityError:
-            return Response({"error": "Пользователь с таким ником уже существует"}, status=status.HTTP_400_BAD_REQUEST)
-            
+        user = serializer.save()
+         
         refresh = RefreshToken.for_user(user)
         return Response({
             "user": UserSerializer(user, context=self.get_serializer_context()).data,

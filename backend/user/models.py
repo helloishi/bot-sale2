@@ -1,5 +1,3 @@
-import re
-
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import gettext as _
@@ -11,12 +9,6 @@ class UserManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if not username:
             raise ValueError("The Username field must be set")
-
-        username = username.replace("@", "")
-        match = re.match(r't\.me\/(\w+)', username)
-        
-        if match:
-            username = match.group(1)
             
         user = self.model(username=username, **extra_fields)
         user.set_password(password)

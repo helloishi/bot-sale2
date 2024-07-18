@@ -64,7 +64,7 @@ class UserFavoriteDiscountsView(APIView):
 
 class DiscountViewByPlaceType(APIView):
     def get(self, request):
-        place_type = request.query_params.get('place_type')
+        place_type = request.query_params.get('place_type', None)
         filterset = DiscountFilter(request.GET, queryset=Discount.objects.all())
 
         if not filterset.is_valid():

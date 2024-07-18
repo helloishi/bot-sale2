@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
+from django.db import IntegrityError
 from .serializers import *
 from .models import User
 
@@ -30,6 +31,38 @@ class MobilePhoneChangeView(APIView):
             return Response({"detail": "Mobile phone updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            user = serializer.save()
+        except IntegrityError:
+            return Response({"error": "Пользователь с таким ником уже существует"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "user": UserSerializer(user, context=self.get_serializer_context()).data,
+            "refresh": str(refresh),
+            "access": str(refresh.access_token),
+        }, status=status.HTTP_201_CREATED)
+
+class UsernameCheckView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        username = request.query_params.get('username', None)
+        if username is None:
+            return Response({"error": "Username parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        user_exists = User.objects.filter(username=username).exists()
+        return Response({"exists": user_exists}, status=status.HTTP_200_OK)
+
 class UsernameChangeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -41,22 +74,6 @@ class UsernameChangeView(APIView):
             return Response({"detail": "Username updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class RegisterView(generics.CreateAPIView):
-    queryset = User.objects.all()
-    serializer_class = RegisterSerializer
-    permission_classes = [AllowAny]
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            "user": UserSerializer(user, context=self.get_serializer_context()).data,
-            "refresh": str(refresh),
-            "access": str(refresh.access_token),
-        }, status=status.HTTP_201_CREATED)
-        
 class LoginView(generics.GenericAPIView):
     permission_classes = [AllowAny]
 

@@ -29,7 +29,7 @@ class Discount(DateMixin):
 
     @property
     def is_active(self):
-        return start_date >= datetime.now().date() < end_date
+        return self.start_date >= datetime.now().date() < self.end_date
 
     @property
     def image_link(self):

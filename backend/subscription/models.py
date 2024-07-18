@@ -5,7 +5,7 @@ from django.db import models
 
 from backend.models import DateMixin
 
-class Subscription(models.Model):
+class Subscription(DateMixin):
     client = models.ForeignKey("user.User", verbose_name=_("Подписчик"), on_delete=models.CASCADE)
     start_date = models.DateField(_("Начало подписки"), auto_now=True, auto_now_add=False)
     end_date = models.DateField(_("Конец подписки"), auto_now=False, auto_now_add=False)

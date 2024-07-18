@@ -1,9 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Subscription
 from user.models import User
@@ -13,6 +15,22 @@ class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
+class SubscriptionCreateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        data = request.data.copy()
+        data['client'] = user.id
+        data['end_date'] = datetime.now().date() + relativedelta(months=1)
+
+        serializer = SubscriptionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 class ActiveSubscriptionListView(generics.ListAPIView):
     serializer_class = SubscriptionSerializer
 

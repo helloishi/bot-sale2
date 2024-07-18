@@ -59,14 +59,25 @@ class UserFavoriteDiscountsView(APIView):
         user = request.user
         favorite_discounts = user.fav_discounts.all()
         serializer = DiscountSerializer(favorite_discounts, many=True)
-        
+
         return Response(serializer.data)
 
-class DiscountListCreateAPIView(generics.ListCreateAPIView):
-    queryset = Discount.objects.all()
-    serializer_class = DiscountSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filterset_class = DiscountFilter
+class DiscountViewByPlaceType(APIView):
+    def get(self, request):
+        place_type = request.query_params.get('place_type')
+        filterset = DiscountFilter(request.GET, queryset=Discount.objects.all())
+
+        if not filterset.is_valid():
+            return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        if place_type:
+            discounts = filterset.qs.filter(place_type=place_type)
+        else:
+            discounts = filterset.qs
+
+        serializer = DiscountSerializer(discounts, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DiscountDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Discount.objects.all()

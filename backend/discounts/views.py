@@ -8,6 +8,7 @@ from user.models import User
 from .models import Discount
 from .serializers import *
 from .filters import DiscountFilter
+from tools import validate_username
 
 class AddFavoriteDiscountView(APIView):
     permission_classes = [IsAuthenticated]
@@ -17,6 +18,7 @@ class AddFavoriteDiscountView(APIView):
         if serializer.is_valid():
             discount_id = serializer.validated_data['discount_id']
             try:
+                username = validate_username(username)
                 user = User.objects.get(username=username)
                 discount = Discount.objects.get(id=discount_id)
             except User.DoesNotExist:
@@ -37,6 +39,7 @@ class RemoveFavoriteDiscountView(APIView):
         if serializer.is_valid():
             discount_id = serializer.validated_data['discount_id']
             try:
+                username = validate_username(username)
                 user = User.objects.get(username=username)
                 discount = Discount.objects.get(id=discount_id)
             except User.DoesNotExist:

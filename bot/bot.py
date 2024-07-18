@@ -26,7 +26,8 @@ async def cmd_start(message: t.Message):
     response = None
 
     if user_in_base:
-        web_app = t.WebAppInfo(url=config.web_app_link)
+        personal_link = f'{config.web_app_link}{username}'
+        web_app = t.WebAppInfo(url=personal_link)
 
         builder.row(
             t.InlineKeyboardButton(

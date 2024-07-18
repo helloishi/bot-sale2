@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Subscription
 from user.models import User
 from .serializers import SubscriptionSerializer
+from tools import validate_username
 
 class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
@@ -55,6 +56,7 @@ class CheckActiveSubscriptionView(APIView):
     def get(self, request, username, *args, **kwargs):
         today = datetime.now().date()
         try:
+            username = validate_username(username)
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)

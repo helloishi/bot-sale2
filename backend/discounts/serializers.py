@@ -13,8 +13,11 @@ class DiscountSerializer(serializers.ModelSerializer):
         fields = ['id', 'place', 'image', 'description', 'address_txt', 'start_date', 'end_date', 'place_type', 'is_active', 'is_favorite']
 
     def get_is_favorite(self, obj):
-        user = self.context['request'].user
-        return obj in user.fav_discounts.all()
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            user = request.user
+            return obj in user.fav_discounts.all()
+        return False
 
 class UserSerializer(serializers.ModelSerializer):
     fav_discounts = DiscountSerializer(many=True, read_only=True)

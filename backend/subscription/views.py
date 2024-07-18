@@ -15,6 +15,15 @@ class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
+class StopUserSubscriptionsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        subscriptions = Subscription.objects.filter(client=user, stopped=False)
+        updated_count = subscriptions.update(stopped=True)
+        return Response({"updated_count": updated_count}, status=status.HTTP_200_OK)
+
 class SubscriptionCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

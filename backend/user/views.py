@@ -8,8 +8,20 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
+
 from .serializers import *
 from .models import User
+
+TELEGRAM_LINK_REGEX = r't\.me\/(\w+)'
+
+def validate_username(username: str) -> str:
+    username = username.replace("@", "")
+    match = re.match(r't\.me\/(\w+)', username)
+    
+    if match:
+        username = match.group(1)
+
+    return username
 
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -41,13 +53,7 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         if 'username' in request.data:
             username = request.data['username']
-
-            username = username.replace("@", "")
-            match = re.match(r't\.me\/(\w+)', username)
-            
-            if match:
-                username = match.group(1)
-
+            username = validate_username(username)
             request.data['username'] = username
 
         serializer = self.get_serializer(data=request.data)
@@ -67,9 +73,11 @@ class UsernameCheckView(APIView):
 
     def get(self, request):
         username = request.query_params.get('username', None)
+
         if username is None:
             return Response({"error": "Username parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
         
+        username = validate_username(username)
         user_exists = User.objects.filter(username=username).exists()
         return Response({"exists": user_exists}, status=status.HTTP_200_OK)
 

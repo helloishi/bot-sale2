@@ -11,8 +11,6 @@ from .filters import DiscountFilter
 from tools import validate_username
 
 class AddFavoriteDiscountView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, username, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
@@ -32,8 +30,6 @@ class AddFavoriteDiscountView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveFavoriteDiscountView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, username, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
@@ -56,8 +52,6 @@ class RemoveFavoriteDiscountView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserFavoriteDiscountsView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def get(self, request, username, *args, **kwargs):
         user = request.user
         favorite_discounts = user.fav_discounts.all()

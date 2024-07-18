@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('DJANGO_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['moscowcard.site', 'localhost', 'server.moscowcard.ru']
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '').split(",")
 
 
 # Application definition

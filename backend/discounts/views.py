@@ -54,7 +54,12 @@ class RemoveFavoriteDiscountView(APIView):
 
 class UserFavoriteDiscountsView(APIView):
     def get(self, request, username, *args, **kwargs):
-        user = request.user
+        try:
+            username = validate_username(username)
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
         favorite_discounts = user.fav_discounts.all()
         serializer = DiscountSerializer(favorite_discounts, many=True)
 

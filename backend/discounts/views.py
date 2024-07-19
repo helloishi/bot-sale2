@@ -3,6 +3,7 @@ from django_filters import rest_framework as filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django.utils import timezone
 
 from user.models import User
 from .models import Discount
@@ -59,21 +60,32 @@ class UserFavoriteDiscountsView(APIView):
 
         return Response(serializer.data)
 
+
 class DiscountViewByPlaceType(APIView):
     def get(self, request):
         place_type = request.query_params.get('place_type', None)
-        filterset = DiscountFilter(request.GET, queryset=Discount.objects.all())
+        username = request.query_params.get('username', None)
 
+        user = None
+        if username:
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        filterset = DiscountFilter(request.GET, queryset=Discount.objects.all())
         if not filterset.is_valid():
             return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        if place_type:
-            discounts = filterset.qs.filter(place_type=place_type)
-        else:
-            discounts = filterset.qs
+        discounts = filterset.qs
+        now = timezone.now().date()
+        discounts = filterset.qs.filter(start_date__lte=now, end_date__gt=now)
 
-        serializer = DiscountSerializer(discounts, many=True)
-        
+        if place_type:
+            discounts = discounts.filter(place_type=place_type)
+
+        serializer = DiscountSerializer(discounts, many=True, context={'request': request, 'user': user})
+
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DiscountDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

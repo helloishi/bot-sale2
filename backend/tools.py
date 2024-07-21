@@ -9,4 +9,4 @@ def validate_username(username: str) -> str:
     if match:
         username = match.group(1)
 
-    return username
+    return username.lower()

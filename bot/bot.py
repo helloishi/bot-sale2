@@ -13,7 +13,7 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def cmd_start(message: t.Message):
-    username = message.from_user.username
+    username = message.from_user.username.lower()
 
     logger.info(username)
 

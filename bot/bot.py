@@ -13,7 +13,7 @@ dp = Dispatcher()
 
 @dp.message(Command("start"))
 async def cmd_start(message: t.Message):
-    username = message.from_user.username.lower()
+    username = message.from_user.username
 
     logger.info(username)
 
@@ -21,6 +21,7 @@ async def cmd_start(message: t.Message):
         await message.answer("Вы пока не установили ник!")
         return 
 
+    username = username.lower()
     user_in_base = get_user_by_username(username)
     builder = InlineKeyboardBuilder()
     response = None

@@ -31,9 +31,7 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser, DateMixin):
     username = models.CharField(_("Юзернейм"), max_length=60, unique=True)
-    name = models.CharField(_("Имя"), max_length=100, default='')
     email = models.EmailField(_("Почта"), max_length=254, blank=True)
-    mobile_phone = models.CharField(_("Номер телефона (с 8)"), max_length=50, blank=True)
     fav_discounts = models.ManyToManyField("discounts.Discount", verbose_name=_("Избранные скидки"), blank=True)
 
     objects = UserManager()

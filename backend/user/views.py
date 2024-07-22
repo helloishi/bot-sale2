@@ -8,17 +8,14 @@ from django.contrib.auth import authenticate, login
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-
-
-
 from django.db import IntegrityError
 
 from .serializers import *
-#from .models import User, PasswordRecovery
+from .models import User#, PasswordRecovery
 from tools import validate_username
 
 
@@ -31,17 +28,6 @@ class PasswordChangeView(APIView):
             request.user.set_password(serializer.validated_data['new_password'])
             request.user.save()
             return Response({"detail": "Password updated successfully"}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class MobilePhoneChangeView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, *args, **kwargs):
-        serializer = MobilePhoneChangeSerializer(data=request.data)
-        if serializer.is_valid():
-            request.user.mobile_phone = serializer.validated_data['mobile_phone']
-            request.user.save()
-            return Response({"detail": "Mobile phone updated successfully"}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(generics.CreateAPIView):

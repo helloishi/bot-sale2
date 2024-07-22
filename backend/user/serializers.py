@@ -7,7 +7,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'name', 'email', 'fav_discounts', 'mobile_phone']
+        fields = ['id', 'username', 'name', 'email', 'fav_discounts']
 
 class PasswordChangeSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
@@ -17,12 +17,6 @@ class PasswordChangeSerializer(serializers.Serializer):
         user = self.context['request'].user
         if not user.check_password(value):
             raise serializers.ValidationError("Old password is not correct")
-        return value
-
-class MobilePhoneChangeSerializer(serializers.Serializer):
-    mobile_phone = serializers.CharField(required=True)
-
-    def validate_mobile_phone(self, value):
         return value
 
 class UsernameChangeSerializer(serializers.Serializer):
@@ -38,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username', 'name', 'email', 'password', 'mobile_phone']
+        fields = ['username', 'name', 'email', 'password', ]
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -46,6 +40,5 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             email=validated_data['email'],
             name=validated_data['name'],
-            mobile_phone=validated_data['mobile_phone'],
         )
         return user

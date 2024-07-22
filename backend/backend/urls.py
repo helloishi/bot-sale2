@@ -9,8 +9,8 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('user.urls')),
-    path('auth/password-reset/', include('dj_rest_auth.urls')),
-    path('auth/', include('django.contrib.auth.urls')),
+    #path('auth/password-reset/', include('dj_rest_auth.urls')),
+    #path('auth/', include('django.contrib.auth.urls')),
     path('auth/password_reset/',
          PasswordResetView.as_view(), name='password_reset'),
     path('auth/password_reset_confirm/<uidb64>/<token>/',

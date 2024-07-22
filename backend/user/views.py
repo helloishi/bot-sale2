@@ -5,11 +5,22 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, login
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
+
+
 from django.db import IntegrityError
 
 from .serializers import *
-from .models import User
+#from .models import User, PasswordRecovery
 from tools import validate_username
+
 
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]
@@ -106,3 +117,32 @@ class LoginView(generics.GenericAPIView):
             })
         else:
             return Response({"error": "Invalid Credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+class PasswordRecoveryRequest(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        email = request.query_params.get('email', None)
+
+        if email is None:
+            return Response({"error": "Email parameter is required."}, status=status.HTTP_400_BAD_REQUEST)
+        if not User.objects.filter(email=email).exists():
+            return Response({"error": "User with this email wasn't found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.get(email=email)
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
+
+        self.__send_password_reset_email(user, uid, token)
+        #PasswordRecovery.objects.create(uid=uid, token=token, username=user.username)
+        return Response({"info": "sent"}, status=status.HTTP_200_OK)
+
+    def __send_password_reset_email(self, user, uid, token):
+        subject = "Password Reset Request"
+        html_message = render_to_string('registration/password_reset_email.html', {'user': user, 'uid': uid, 'token': token})
+        plain_message = strip_tags(html_message)
+        from_email = "daniildiveev@yandex.ru"
+        to = user.email
+
+        send_mail(subject, plain_message, from_email, [to], html_message=html_message)
+

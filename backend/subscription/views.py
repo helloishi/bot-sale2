@@ -69,6 +69,34 @@ class CheckActiveSubscriptionView(APIView):
 
         return Response({"has_active_subscription": has_active_subscription})
 
+class GetInfoOnSubscription(APIView):
+    def get(self, request, username, *args, **kwargs):
+        today = datetime.now().date()
+
+        try:
+            username = validate_username(username)
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        subscriptions = Subscription.objects.filter(
+            client=user, 
+            end_date__gt=today,
+            stopped=False
+        ).order_by("-end_date")
+
+        if not subscriptions:
+            return Response({"detail": "Subscriptions not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        latest_subscription = subscriptions.first()
+
+        return Response({
+            "next_payment": str(latest_subscription.end_date),
+            "start_date": str(latest_subscription.start_date)
+        }, status=status.HTTP_200_OK)
+
+
+
 class SubscriptionDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer

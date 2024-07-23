@@ -27,7 +27,7 @@ class StopUserSubscriptionsView(APIView):
 
 class AcceptPayment(APIView):
     def post(self, request):
-        print(request)  
+        return Response(request.body, status=status.HTTP_200_OK)  
 
 class SubscriptionCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]

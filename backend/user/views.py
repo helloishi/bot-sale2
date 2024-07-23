@@ -26,6 +26,7 @@ from django.db import IntegrityError
 from .serializers import *
 #from .models import User#, PasswordRecovery
 from tools import validate_username
+from backend.settings import EMAIL_HOST_USER
 
 
 class PasswordChangeView(APIView):
@@ -136,7 +137,7 @@ class PasswordRecoveryRequest(APIView):
         subject = "Password Reset Request"
         html_message = render_to_string('registration/password_reset_email.html', {'user': user, 'uid': uid, 'token': token})
         plain_message = strip_tags(html_message)
-        from_email = "daniildiveev@yandex.ru"
+        from_email = EMAIL_HOST_USER
         to = user.email
 
         send_mail(subject, plain_message, from_email, [to], html_message=html_message)

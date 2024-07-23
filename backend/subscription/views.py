@@ -93,10 +93,10 @@ class GetInfoOnSubscription(APIView):
             return Response({"detail": "Subscriptions not found."}, status=status.HTTP_404_NOT_FOUND)
 
         latest_subscription = subscriptions.first()
+        end_date = latest_subscription.end_date.strftime("%d.%m.%Y")
 
         return Response({
-            "next_payment": str(latest_subscription.end_date),
-            "start_date": str(latest_subscription.start_date)
+            "next_payment": end_date,
         }, status=status.HTTP_200_OK)
 
 

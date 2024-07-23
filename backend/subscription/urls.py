@@ -9,4 +9,5 @@ urlpatterns = [
     path('sub-info/<str:username>/', GetInfoOnSubscription.as_view(), name='subscription-info'),
     path('create/', SubscriptionCreateAPIView.as_view(), name='create-subscription-view'),
     path('stop-subscriptions/', StopUserSubscriptionsView.as_view(), name='stop-subscriptions'),
+    path('accept-payment/', AcceptPayment.as_view(), name='accept-payment'),
 ]

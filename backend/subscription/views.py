@@ -25,6 +25,10 @@ class StopUserSubscriptionsView(APIView):
         updated_count = subscriptions.update(stopped=True)
         return Response({"updated_count": updated_count}, status=status.HTTP_200_OK)
 
+class AcceptPayment(APIView):
+    def post(self, request):
+        print(request)  
+
 class SubscriptionCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
 

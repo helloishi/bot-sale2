@@ -11,10 +11,12 @@ class Discount(DateMixin):
         verbose_name_plural = _("Скидки")
     
     class PlaceType(models.TextChoices):
-        RESTAURANT = "REST", _("Ресторан")
         CAFE = "CAFE", _("Кафе")
-        THEATER = "THTR", _("Театр")
-        SHOP = "SHOP", _("Магазин")
+        RESTAURANT = "REST", _("Рестораны")
+        SHOP = "SHOP", _("Магазины")
+        DOSUG = "DSUG", _("Досуг")
+        BEAUTY = "BTY", _("Красота")
+        SPORT = "SPRT", _("Спорт")
         OTHER = "OTHR", _("Другое")
 
     id = models.AutoField(_("ID"), primary_key=True)

@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Subscription
 from user.models import User
 from .serializers import SubscriptionSerializer
-from tools import validate_username
+from tools import validate_username, fetch_payments_from_cloud_payments, stop_cloud_payments_recurrent
 
 class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
@@ -21,8 +21,13 @@ class StopUserSubscriptionsView(APIView):
 
     def patch(self, request):
         user = request.user
+        email = user.email
         subscriptions = Subscription.objects.filter(client=user, stopped=False)
         updated_count = subscriptions.update(stopped=True)
+
+        subscription_ids = fetch_payments_from_cloud_payments(email)
+        stop_cloud_payments_recurrent(subscription_ids, email)
+        
         return Response({"updated_count": updated_count}, status=status.HTTP_200_OK)
 
 class AcceptPayment(APIView):

@@ -1,4 +1,5 @@
 import re
+import os
 from typing import Optional
 
 import requests
@@ -37,9 +38,44 @@ def fetch_payments_from_cloud_payments(email: str) -> Optional[list[str]]:
         auth=HTTPBasicAuth(login, password)
     )
 
-    if response.ok:
-        pass  
+    response = response.json()
+
+    if not response:
+        return
+
+    ids = []
+
+    if response["Success"] == True and response["Model"]:
+        for sub in response["Model"]:
+            sub_id = sub.get("Id", None)
+
+            if sub_id:
+                ids.append(sub_id)
+
+    return ids
 
 
-def stop_cloud_payments_recurrent(ids: list[str]) -> None:
-    pass
+def stop_cloud_payments_recurrent(ids: list[str], email:str) -> None:
+    if not ids:
+        return
+
+    for id_ in ids:
+        payload = {
+            "subscriptionId": id_,
+            "AccountId": email,
+        } 
+
+        login, password = os.getenv("PAYMENT_API_ID"), os.getenv("PAYMENT_API_PASS")
+
+        response = requests.post(
+            CLOUD_PAYMENTS_FETCH_SUBS, 
+            data=payload,
+            auth=HTTPBasicAuth(login, password)
+        )
+
+        response = response.json()
+
+        print(response)
+
+        if response["Success"]:
+            print(f"Subscription {id_} successfully stopped!")

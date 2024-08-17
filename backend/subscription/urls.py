@@ -10,5 +10,6 @@ urlpatterns = [
     path('create/', SubscriptionCreateAPIView.as_view(), name='create-subscription-view'),
     path('stop-subscriptions/', StopUserSubscriptionsView.as_view(), name='stop-subscriptions'),
     path('accept-payment/', AcceptPayment.as_view(), name='accept-payment'),
-    path('create-payment-token/', PayForSubscriptionView.as_view(), name='create-payment-token'),
+    path('create-payment-token/', GetPaymentTokenView.as_view(), name='create-payment-token'),
+    path('create-payment-link/', GetPaymentLinkView.as_view(), name='create-payment-link'),
 ]

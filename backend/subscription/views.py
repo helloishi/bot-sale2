@@ -17,7 +17,7 @@ class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
-class PayForSubscriptionView(APIView):
+class GetPaymentTokenView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -25,6 +25,16 @@ class PayForSubscriptionView(APIView):
         
         return Response({
             "confirmation_token": token
+        })
+
+class GetPaymentLinkView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        link = token = YooKassaPayment.get_confirmation_link()
+        
+        return Response({
+            "confirmation_link": link
         })
 
 class StopUserSubscriptionsView(APIView):

@@ -11,10 +11,21 @@ from .models import Subscription
 from user.models import User
 from .serializers import SubscriptionSerializer
 from tools import validate_username, fetch_payments_from_cloud_payments, stop_cloud_payments_recurrent
+from payment import *
 
 class SubscriptionListCreateAPIView(generics.ListCreateAPIView):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
+
+class PayForSubscriptionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        token = YooKassaPayment.get_confirmation_token()
+        
+        return Response({
+            "confirmation_token": token
+        })
 
 class StopUserSubscriptionsView(APIView):
     permission_classes = [IsAuthenticated]

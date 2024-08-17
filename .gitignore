@@ -4,3 +4,5 @@
 git.sh
 .env
 images
+.ipynb_checkpoints
+*.ipynb

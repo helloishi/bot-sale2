@@ -10,7 +10,7 @@ load_dotenv()
 Configuration.account_id = os.getenv("YOOKASSA_ACCOUNT_ID")
 Configuration.secret_key = os.getenv("YOOKASSA_KEY")
 
-SUBSCRIPTION_COST = 299
+SUBSCRIPTION_COST = 10
 
 class YooKassaPayment:
     @staticmethod

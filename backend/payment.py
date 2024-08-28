@@ -24,7 +24,8 @@ class YooKassaPayment:
                 "type": "embedded"
             },
             "capture": True,
-            "description": "Оплата подписки в moscowcard.ru"
+            "description": "Оплата подписки в moscowcard.ru",
+            "save_payment_method": True,
         })
 
         payment = payment.json()
@@ -44,7 +45,8 @@ class YooKassaPayment:
                 "return_url": "https://moscowcard.ru/thank-you"
             },
             "capture": True,
-            "description": "Заказ №1"
+            "description": "Заказ №1",
+            "save_payment_method": True,
         })
 
         payment = payment.json()

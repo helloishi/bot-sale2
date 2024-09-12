@@ -28,6 +28,7 @@ class Discount(DateMixin):
     start_date = models.DateField(_("Дата начала скидки"), auto_now=False, auto_now_add=False)
     end_date = models.DateField(_("Дата конца скидки"), auto_now=False, auto_now_add=False)
     place_type = models.CharField(_("Тип заведения"), max_length=4, choices=PlaceType.choices, blank=True)
+    order = models.IntegerField(_("Номер в боте"), default=0)
 
     @property
     def is_active(self):

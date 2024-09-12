@@ -11,7 +11,7 @@ class DiscountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Discount
-        fields = ['id', 'place', 'image', 'description', 'address_txt', 'start_date', 'end_date', 'place_type', 'is_active', 'is_favorite', 'place_type_display']
+        fields = ['id', 'place', 'image', 'description', 'address_txt', 'start_date', 'end_date', 'place_type', 'is_active', 'is_favorite', 'place_type_display', 'order']
 
     def get_is_favorite(self, obj):
         user = self.context.get('user')

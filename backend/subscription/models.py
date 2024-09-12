@@ -10,6 +10,7 @@ class Subscription(DateMixin):
     start_date = models.DateField(_("Начало подписки"), auto_now=True, auto_now_add=False)
     end_date = models.DateField(_("Конец подписки"), auto_now=False, auto_now_add=False)
     stopped = models.BooleanField(_("Отменена"), default=False)
+    order = models.IntegerField(_("Номер в боте"), default=0)
     
     class Meta:
         verbose_name = _("Подписка")

@@ -32,12 +32,13 @@ async def cmd_start(message: t.Message):
 
         builder.row(
             t.InlineKeyboardButton(
-                text='Аппка',
+                text='Смотреть акции тут',
                 web_app=web_app
             )
         )
 
-        response = "Вот ссылка на аппку"
+        response = """Это карта привилегий от канала @MoscowMap\n
+        Чтобы воспользоваться акциями - нужна регистрация: moscowcard.ru"""
     else:
         builder.row(
             t.InlineKeyboardButton(

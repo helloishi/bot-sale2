@@ -90,7 +90,7 @@ class DiscountViewByPlaceType(APIView):
             discounts = discounts.filter(place_type=place_type)
 
         discounts = discounts.order_by("order")
-
+        
         serializer = DiscountSerializer(discounts, many=True, context={'request': request, 'user': user})
 
         return Response(serializer.data, status=status.HTTP_200_OK)

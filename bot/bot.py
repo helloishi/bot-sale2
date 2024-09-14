@@ -46,7 +46,7 @@ async def cmd_start(message: t.Message):
             )
         )
 
-        response = "Зарегистрируйтесь по ссылке"
+        response = "Зарегистрируйтесь по ссылке, далее перейдите в бота и напишите /start"
 
     await message.answer(response, reply_markup=builder.as_markup())
 

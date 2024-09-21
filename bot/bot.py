@@ -37,7 +37,7 @@ async def cmd_start(message: t.Message):
             )
         )
 
-        response = """Это карта привилегий от канала @MoscowMap\nЧтобы воспользоваться акциями - нужна регистрация: moscowcard.ru"""
+        response = """Это карта привилегий от канала @MoscowMap\nЧтобы воспользоваться акциями - нужна регистрация: t.me/moscowbenefit_bot/mosbotfit"""
     else:
         builder.row(
             t.InlineKeyboardButton(

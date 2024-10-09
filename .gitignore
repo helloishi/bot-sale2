@@ -6,3 +6,4 @@ git.sh
 images
 .ipynb_checkpoints
 *.ipynb
+backend/cards/*

@@ -46,8 +46,8 @@ class StopUserSubscriptionsView(APIView):
         subscriptions = Subscription.objects.filter(client=user, stopped=False)
         updated_count = subscriptions.update(stopped=True)
 
-        subscription_ids = fetch_payments_from_cloud_payments(email)
-        stop_cloud_payments_recurrent(subscription_ids, email)
+        #subscription_ids = fetch_payments_from_cloud_payments(email)
+        #stop_cloud_payments_recurrent(subscription_ids, email)
         
         return Response({"updated_count": updated_count}, status=status.HTTP_200_OK)
 

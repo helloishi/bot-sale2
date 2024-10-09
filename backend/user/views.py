@@ -28,6 +28,12 @@ from .serializers import *
 from tools import validate_username
 from backend.settings import EMAIL_HOST_USER
 
+class UserDetailView(generics.RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    #permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'username'  # Lookup user by username instead of pk
+
 
 class PasswordChangeView(APIView):
     permission_classes = [IsAuthenticated]

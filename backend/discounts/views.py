@@ -65,12 +65,16 @@ class UserFavoriteDiscountsView(APIView):
 
         return Response(serializer.data)
 
-
 class DiscountViewByPlaceType(APIView):
     def get(self, request):
         place_type = request.query_params.get('place_type', None)
         username = request.query_params.get('username', None)
-
+        is_site = request.query_params.get('is_site', None)
+        is_bot = request.query_params.get('is_bot', None)
+        
+        if not is_site and not is_bot:
+            return Response({"error": "unknown source"}, status=status.HTTP_400_BAD_REQUEST)
+                
         user = None
         if username:
             try:
@@ -85,12 +89,11 @@ class DiscountViewByPlaceType(APIView):
         now = timezone.now().date()
         discounts = filterset.qs.filter(start_date__lte=now, end_date__gt=now)
         
-        if not user:
-            discounts = (
-                discounts
-                #.exclude(promocode__isnull=False)
-                .filter(promocode__exact='')    
-                    )
+        if is_site == '1':
+            discounts = discounts.filter(show_on_site=True)
+
+        if is_bot == '1':
+            discounts = discounts.filter(show_in_bot=True)
 
         if place_type:
             discounts = discounts.filter(place_type=place_type)

@@ -31,6 +31,8 @@ class Discount(DateMixin):
     promocode = models.CharField(_("Промокод"), max_length=60, blank=True)
     promocode_description = models.CharField(_("Описание промокода"), max_length=100, blank=True)
     order = models.IntegerField(_("Номер в боте"), default=0)
+    show_in_bot = models.BooleanField(_("Отображение в боте"), default=False)
+    show_on_site = models.BooleanField(_("Отображение на сайте"), default=True)
 
     @property
     def is_active(self):

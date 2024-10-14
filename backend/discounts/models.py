@@ -29,6 +29,7 @@ class Discount(DateMixin):
     end_date = models.DateField(_("Дата конца скидки"), auto_now=False, auto_now_add=False)
     place_type = models.CharField(_("Тип заведения"), max_length=4, choices=PlaceType.choices, blank=True)
     promocode = models.CharField(_("Промокод"), max_length=60, blank=True)
+    promocode_description = models.CharField(_("Описание промокода"), max_length=100, blank=True)
     order = models.IntegerField(_("Номер в боте"), default=0)
 
     @property

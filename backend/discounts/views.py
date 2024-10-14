@@ -82,9 +82,15 @@ class DiscountViewByPlaceType(APIView):
         if not filterset.is_valid():
             return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        discounts = filterset.qs
         now = timezone.now().date()
         discounts = filterset.qs.filter(start_date__lte=now, end_date__gt=now)
+        
+        if not user:
+            discounts = (
+                discounts
+                #.exclude(promocode__isnull=False)
+                .filter(promocode__exact='')    
+                    )
 
         if place_type:
             discounts = discounts.filter(place_type=place_type)

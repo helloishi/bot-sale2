@@ -1,0 +1,6 @@
+[submodule "passbook"]
+    path = bot/cards/
+    url = https://github.com/devartis/passbook.git
+[submodule "bot/cards/passbook"]
+	path = bot/cards/passbook
+	url = https://github.com/devartis/passbook.git

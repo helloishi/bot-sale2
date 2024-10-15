@@ -7,3 +7,5 @@ images
 .ipynb_checkpoints
 *.ipynb
 backend/cards/*
+wallet_cards
+*/**/keys_certs/

@@ -26,6 +26,7 @@ def generate_apple_wallet_card(
     passfile.serialNumber = '1234567' 
     passfile.barcode = Barcode(message = 'Barcode message')    
     passfile.backgroundColor = '#BB0000'
+     
     # Including the icon and logo is necessary for the passbook to be valid.
     passfile.addFile('icon.png', open('./images/icon.png', 'rb'))
     passfile.addFile('logo.png', open('./images/logo.png', 'rb'))

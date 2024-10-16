@@ -37,6 +37,13 @@ async def cmd_start(message: t.Message):
             )
         )
 
+        builder.row(
+            t.InlineKeyboardButton(
+                text='Карта привелегий',
+                url=config.card_link,
+            )
+        )
+
         response = """Это карта привилегий от канала @MoscowMap\nЧтобы воспользоваться акциями - нужна регистрация: t.me/moscowbenefit_bot/mosbotfit"""
     else:
         builder.row(

@@ -5,6 +5,7 @@ class BotSettings(BaseSettings):
     bot_token: SecretStr
     login_link: str
     web_app_link: str
+    card_link: str
 
     class Config:
         env_file = '.env'
@@ -23,3 +24,4 @@ class DBSettings(BaseSettings):
 
 config = BotSettings()
 db_config = DBSettings()
+

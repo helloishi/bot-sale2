@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import sqlalchemy as sa
@@ -21,8 +23,11 @@ Session = sessionmaker(
     bind=engine,
 )
 
-def get_user_by_username(username: str) -> bool:
+def get_user_by_username(username: str) -> Optional[User]:
     with Session() as session:
         user = session.query(User).filter(User.username == username).first()
+    
+    print(user.name)
 
-    return user is not None
+    return user or None
+

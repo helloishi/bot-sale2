@@ -36,9 +36,9 @@ class AddFavoriteDiscountView(APIView):
                 discount = Discount.objects.get(id=discount_id)
             except Discount.DoesNotExist:
                 return Response({"detail": "Discount not found."}, status=status.HTTP_404_NOT_FOUND)
-
-            user.fav_discounts.add(discount)
-            return Response({"detail": "Discount added to favorites."}, status=status.HTTP_200_OK)
+            if not user:
+                user.fav_discounts.add(discount)
+                return Response({"detail": "Discount added to favorites."}, status=status.HTTP_200_OK)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

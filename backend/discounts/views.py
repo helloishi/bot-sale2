@@ -121,12 +121,6 @@ class DiscountViewByPlaceType(APIView):
 
         now = timezone.now().date()
         discounts = filterset.qs.filter(start_date__lte=now, end_date__gt=now)
-        
-        if is_site == '1':
-            discounts = discounts.filter(show_on_site=True)
-
-        if is_bot == '1':
-            discounts = discounts.filter(show_in_bot=True)
 
         if place_type:
             discounts = discounts.filter(place_type=place_type)

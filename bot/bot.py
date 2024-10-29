@@ -62,6 +62,9 @@ async def process_name(message: types.Message, state: FSMContext):
             name=name, 
             telegram_id=telegram_id,
         )
+
+    else:
+        update_user_name(username, name)
     
     personal_link = f'{config.web_app_link}{username}'
     web_app = types.WebAppInfo(url=personal_link)

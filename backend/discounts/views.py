@@ -97,9 +97,6 @@ class DiscountViewByPlaceType(APIView):
         is_site = request.query_params.get('is_site', None)
         is_bot = request.query_params.get('is_bot', None)
         telegram_id = request.query_params.get('userId', None)
-        
-        if not is_site and not is_bot:
-            return Response({"error": "unknown source"}, status=status.HTTP_400_BAD_REQUEST)
                 
         user = None
         

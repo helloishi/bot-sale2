@@ -10,7 +10,7 @@ import logging
 
 from config import config
 #from cards.apple import generate_apple_wallet_card, CARDS_DIR
-from db import create_user
+from db import *
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -50,11 +50,14 @@ async def process_name(message: types.Message, state: FSMContext):
     username = message.from_user.username
     telegram_id = message.from_user.id
 
-    create_user(
-        username,
-        name, 
-        telegram_id,
-    )
+    user = get_user_by_username(username)
+
+    if not user:
+        create_user(
+            username,
+            name, 
+            telegram_id,
+        )
 
     await state.update_data(user_name=name)
 

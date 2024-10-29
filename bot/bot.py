@@ -15,6 +15,9 @@ from db import *
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
+GET_CARD_TEXT = "Получить карту"
+CHANGE_CARD_NAME = "Изменить имя карты"
+
 # Initialize bot and dispatcher
 bot = Bot(token=config.bot_token.get_secret_value())
 storage = MemoryStorage()
@@ -34,13 +37,13 @@ async def cmd_start(message: types.Message):
     response = "Привет и добро пожаловать! Чтобы посмотреть все акции и скидки, нужно сначала получить карту лояльности."
 
     keyboard = [
-        [KeyboardButton(text="Карта привилегий")],
+        [KeyboardButton(text=GET_CARD_TEXT)],
     ]
     reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
     await message.answer(response, reply_markup=reply_keyboard)
 
-@router.message(F.text == "Карта привилегий")
+@router.message(F.text == GET_CARD_TEXT)
 async def create_apple_card_request(message: types.Message, state: FSMContext):
     await message.answer("Введите ваше имя карты:")
     await state.set_state(CreateAppleCard.waiting_for_name)
@@ -64,33 +67,40 @@ async def process_name(message: types.Message, state: FSMContext):
     web_app = types.WebAppInfo(url=personal_link)
 
     keyboard = [
-        [KeyboardButton(text="Изменить имя карты")],
-        [KeyboardButton(text="Посмотреть ссылки")],
+        [KeyboardButton(text="Меню")],
     ]
-    reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
     reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
+    inline_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Смотреть акции тут", web_app=web_app)],
+        [InlineKeyboardButton(text="Показать карту", url=config.card_link)],
+        [InlineKeyboardButton(text=CHANGE_CARD_NAME, callback_data='change_card_name_callback')]
+    ])
 
     await state.update_data(user_name=name)
     await state.clear()
-    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.", reply_markup=reply_keyboard)
+    await message.answer(f"Карта готовится...", reply_markup=inline_keyboard)
 
-@router.message(F.text == "Посмотреть ссылки")
+    await message.answer("Это карта привилегий от канала @MoscowMap", reply_markup=reply_keyboard)
+
+@router.message(F.text == "Меню")
 async def show_links(message: types.Message):
     username = message.from_user.username
     personal_link = f'{config.web_app_link}{username}'
     web_app = WebAppInfo(url=personal_link)
-
+    
     inline_keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Перейти в веб-приложение", web_app=web_app)],
-        [InlineKeyboardButton(text="Карта привелегий", url=config.card_link)]
+        [InlineKeyboardButton(text="Смотреть акции тут", web_app=web_app)],
+        [InlineKeyboardButton(text="Показать карту", url=config.card_link)],
+        [InlineKeyboardButton(text=CHANGE_CARD_NAME, callback_data='change_card_name_callback')]
     ])
 
     await message.answer("Ссылки доступны ниже:", reply_markup=inline_keyboard)
 
-@router.message(F.text == "Изменить имя карты")
-async def change_card_name(message: types.Message, state: FSMContext):
-    await message.answer("Введите новое имя карты:")
+@router.callback_query(F.data == 'change_card_name_callback')
+async def change_card_name_callback(callback_query: types.CallbackQuery, state: FSMContext):
+    await callback_query.message.answer("Введите новое имя карты:")
     await state.set_state(CreateAppleCard.changing_name)
 
 @router.message(CreateAppleCard.changing_name)

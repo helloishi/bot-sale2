@@ -3,6 +3,7 @@ import asyncio
 from aiogram import Bot, Dispatcher, types, Router, F
 from aiogram.filters import Command
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -54,15 +55,33 @@ async def process_name(message: types.Message, state: FSMContext):
 
     if not user:
         create_user(
-            username,
-            name, 
-            telegram_id,
+            username=username,
+            name=name, 
+            telegram_id=telegram_id,
         )
 
-    await state.update_data(user_name=name)
+    personal_link = f'{config.web_app_link}{username}'
+    web_app = types.WebAppInfo(url=personal_link)
+    builder = InlineKeyboardBuilder()
 
-    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.")
+    builder.row(
+        types.InlineKeyboardButton(
+            text='Смотреть акции тут',
+            web_app=web_app
+        )
+    )
+    
+    builder.row(
+        types.InlineKeyboardButton(
+            text='Карта привелегий',
+            url=config.card_link,
+        )
+    )
+
+    await state.update_data(user_name=name)
     await state.clear()
+    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.", reply_markup=builder.as_markup())
+
 
 dp.include_router(router)
 

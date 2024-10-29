@@ -52,6 +52,8 @@ class RemoveFavoriteDiscountView(APIView):
             username = serializer.validated_data.get('username')
             telegram_id = serializer.validated_data.get('userId')
 
+            print(username, telegram_id)
+
             username = validate_username(username)
             
             user = None

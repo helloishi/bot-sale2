@@ -68,7 +68,7 @@ class RemoveFavoriteDiscountView(APIView):
             except Discount.DoesNotExist:
                 return Response({"detail": "Discount not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            if discount in user.fav_discounts.all():
+            if user and discount in user.fav_discounts.all():
                 user.fav_discounts.remove(discount)
                 return Response({"detail": "Discount removed from favorites."}, status=status.HTTP_200_OK)
             else:

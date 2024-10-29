@@ -36,19 +36,25 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
         userId = self.request.query_params.get('userId', None)
         username = self.request.query_params.get('username', None)
 
-        if userId and username:
-            return User.objects.filter(telegram_id=userId, username=username)
-        elif userId:
-            return User.objects.filter(telegram_id=userId)
-        elif username:
-            return User.objects.filter(username=username)
-        else:
-            return User.objects.none()
+        print(userId, username)
+
+        if username:
+            users = User.objects.filter(username=username)
+            if users.exists():
+                return users
+
+        if userId:
+            users = User.objects.filter(telegram_id=int(userId))
+            if users.exists():
+                return users
+
+        return User.objects.none()
 
     def get_object(self):
         queryset = self.get_queryset()
         obj = generics.get_object_or_404(queryset)
         return obj
+
 
 
 

@@ -80,7 +80,7 @@ async def process_name(message: types.Message, state: FSMContext):
 
     await state.update_data(user_name=name)
     await state.clear()
-     await message.answer(f"Карта готовится...", reply_markup=reply_keyboard)
+    await message.answer(f"Карта готовится...", reply_markup=reply_keyboard)
 
     await message.answer("Это карта привилегий от канала @MoscowMap", reply_markup=inline_keyboard)
 

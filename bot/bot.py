@@ -80,9 +80,9 @@ async def process_name(message: types.Message, state: FSMContext):
 
     await state.update_data(user_name=name)
     await state.clear()
-    await message.answer(f"Карта готовится...", reply_markup=inline_keyboard)
+     await message.answer(f"Карта готовится...", reply_markup=reply_keyboard)
 
-    await message.answer("Это карта привилегий от канала @MoscowMap", reply_markup=reply_keyboard)
+    await message.answer("Это карта привилегий от канала @MoscowMap", reply_markup=inline_keyboard)
 
 @router.message(F.text == "Меню")
 async def show_links(message: types.Message):
@@ -96,7 +96,7 @@ async def show_links(message: types.Message):
         [InlineKeyboardButton(text=CHANGE_CARD_NAME, callback_data='change_card_name_callback')]
     ])
 
-    await message.answer("Ссылки доступны ниже:", reply_markup=inline_keyboard)
+    await message.answer("Это карта привилегий от канала @MoscowMap", reply_markup=inline_keyboard)
 
 @router.callback_query(F.data == 'change_card_name_callback')
 async def change_card_name_callback(callback_query: types.CallbackQuery, state: FSMContext):

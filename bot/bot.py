@@ -9,7 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 import logging
 
 from config import config
-from cards.apple import generate_apple_wallet_card, CARDS_DIR
+#from cards.apple import generate_apple_wallet_card, CARDS_DIR
 from db import create_user
 
 # Initialize logging

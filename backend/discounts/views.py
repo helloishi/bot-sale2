@@ -84,8 +84,9 @@ class RemoveFavoriteDiscountView(APIView):
 
 
 class UserFavoriteDiscountsView(APIView):
-    def get(self, request, username, *args, **kwargs):
+    def get(self, request):
         try:
+            username = request.query_params.get("username")
             username = validate_username(username)
             user = User.objects.get(username=username)
         except User.DoesNotExist:

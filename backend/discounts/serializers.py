@@ -4,6 +4,8 @@ from user.models import User
 
 class FavoriteDiscountSerializer(serializers.Serializer):
     discount_id = serializers.IntegerField()
+    username = serializers.CharField()
+    userId = serializers.IntegerField()
 
 class DiscountSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField()

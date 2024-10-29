@@ -48,3 +48,19 @@ def create_user(username: str, name: Optional[str] = None, telegram_id: Optional
         session.commit()
         session.refresh(new_user)
     return new_user
+
+def update_user_name(username: str, new_name: str):
+    session = Session()
+    try:
+        user = session.query(User).filter(User.username == username).first()
+        if user:
+            user.name = new_name
+            session.commit()
+            print(f"User {username}'s name updated to {new_name}.")
+        else:
+            print(f"User {username} not found.")
+    except Exception as e:
+        session.rollback()
+        print(f"An error occurred: {e}")
+    finally:
+        session.close()

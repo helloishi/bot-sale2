@@ -2,8 +2,7 @@ import requests
 import asyncio
 from aiogram import Bot, Dispatcher, types, Router, F
 from aiogram.filters import Command
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -27,6 +26,7 @@ router = Router()
 # Define the states
 class CreateAppleCard(StatesGroup):
     waiting_for_name = State()
+    changing_name = State()
 
 # Register the "start" command handler
 @router.message(Command("start"))
@@ -59,29 +59,50 @@ async def process_name(message: types.Message, state: FSMContext):
             name=name, 
             telegram_id=telegram_id,
         )
-
+    
     personal_link = f'{config.web_app_link}{username}'
     web_app = types.WebAppInfo(url=personal_link)
-    builder = InlineKeyboardBuilder()
 
-    builder.row(
-        types.InlineKeyboardButton(
-            text='Смотреть акции тут',
-            web_app=web_app
-        )
-    )
-    
-    builder.row(
-        types.InlineKeyboardButton(
-            text='Карта привелегий',
-            url=config.card_link,
-        )
-    )
+    keyboard = [
+        [KeyboardButton(text="Изменить имя карты")],
+        [KeyboardButton(text="Посмотреть ссылки")],
+    ]
+    reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
+    reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
 
     await state.update_data(user_name=name)
     await state.clear()
-    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.", reply_markup=builder.as_markup())
+    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.", reply_markup=reply_keyboard)
 
+@router.message(F.text == "Посмотреть ссылки")
+async def show_links(message: types.Message):
+    username = message.from_user.username
+    personal_link = f'{config.web_app_link}{username}'
+    web_app = WebAppInfo(url=personal_link)
+
+    inline_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Перейти в веб-приложение", web_app=web_app)],
+        [InlineKeyboardButton(text="Карта привелегий", url=config.card_link)]
+    ])
+
+    await message.answer("Ссылки доступны ниже:", reply_markup=inline_keyboard)
+
+@router.message(F.text == "Изменить имя карты")
+async def change_card_name(message: types.Message, state: FSMContext):
+    await message.answer("Введите новое имя карты:")
+    await state.set_state(CreateAppleCard.changing_name)
+
+@router.message(CreateAppleCard.changing_name)
+async def process_new_name(message: types.Message, state: FSMContext):
+    new_name = message.text
+    username = message.from_user.username
+
+    # Call the function to update user's name
+    update_user_name(username, new_name)
+
+    await state.clear()
+    await message.answer(f"Ваше имя успешно обновлено на {new_name}.")
 
 dp.include_router(router)
 

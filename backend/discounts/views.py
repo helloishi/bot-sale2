@@ -36,6 +36,8 @@ class AddFavoriteDiscountView(APIView):
                 except User.DoesNotExist:
                     return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
             
+            print(user)
+
             try:
                 discount = Discount.objects.get(id=discount_id)
             except Discount.DoesNotExist:

@@ -18,6 +18,7 @@ class DiscountSerializer(serializers.ModelSerializer):
     def get_is_favorite(self, obj):
         user = self.context.get('user')
         if user:
+            print(f"user: {user} at discount serializer")
             return obj in user.fav_discounts.all()
         return False
 

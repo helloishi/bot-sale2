@@ -20,6 +20,8 @@ class AddFavoriteDiscountView(APIView):
             telegram_id = serializer.validated_data.get('userId')
 
             username = validate_username(username)
+
+            print(username, telegram_id)
             
             user = None
             if username:

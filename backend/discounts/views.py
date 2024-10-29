@@ -12,16 +12,28 @@ from .filters import DiscountFilter
 from tools import validate_username
 
 class AddFavoriteDiscountView(APIView):
-    def post(self, request, username, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
             discount_id = serializer.validated_data['discount_id']
+            username = serializer.validated_data.get('username')
+            telegram_id = serializer.validated_data.get('userId')
+            
+            user = None
+            if username:
+                try:
+                    user = User.objects.get(username=username)
+                except User.DoesNotExist:
+                    pass
+            
+            if not user and telegram_id:
+                try:
+                    user = User.objects.get(telegram_id=telegram_id)
+                except User.DoesNotExist:
+                    return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            
             try:
-                username = validate_username(username)
-                user = User.objects.get(username=username)
                 discount = Discount.objects.get(id=discount_id)
-            except User.DoesNotExist:
-                return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
             except Discount.DoesNotExist:
                 return Response({"detail": "Discount not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -31,16 +43,28 @@ class AddFavoriteDiscountView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RemoveFavoriteDiscountView(APIView):
-    def post(self, request, username, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         serializer = FavoriteDiscountSerializer(data=request.data)
         if serializer.is_valid():
             discount_id = serializer.validated_data['discount_id']
+            username = serializer.validated_data.get('username')
+            telegram_id = serializer.validated_data.get('userId')
+            
+            user = None
+            if username:
+                try:
+                    user = User.objects.get(username=username)
+                except User.DoesNotExist:
+                    pass
+            
+            if not user and telegram_id:
+                try:
+                    user = User.objects.get(telegram_id=telegram_id)
+                except User.DoesNotExist:
+                    return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            
             try:
-                username = validate_username(username)
-                user = User.objects.get(username=username)
                 discount = Discount.objects.get(id=discount_id)
-            except User.DoesNotExist:
-                return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
             except Discount.DoesNotExist:
                 return Response({"detail": "Discount not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -51,6 +75,7 @@ class RemoveFavoriteDiscountView(APIView):
                 return Response({"detail": "Discount not in favorites."}, status=status.HTTP_400_BAD_REQUEST)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserFavoriteDiscountsView(APIView):
     def get(self, request, username, *args, **kwargs):
@@ -71,14 +96,22 @@ class DiscountViewByPlaceType(APIView):
         username = request.query_params.get('username', None)
         is_site = request.query_params.get('is_site', None)
         is_bot = request.query_params.get('is_bot', None)
+        telegram_id = requests.query_params.get('userId', None)
         
         if not is_site and not is_bot:
             return Response({"error": "unknown source"}, status=status.HTTP_400_BAD_REQUEST)
                 
         user = None
+        
         if username:
             try:
                 user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                pass
+        
+        if not user and telegram_id:
+            try:
+                user = User.objects.get(telegram_id=telegram_id)
             except User.DoesNotExist:
                 return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 

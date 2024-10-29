@@ -31,3 +31,22 @@ def get_user_by_username(username: str) -> Optional[User]:
 
     return user or None
 
+def create_user(username: str, name: Optional[str] = None, telegram_id: Optional[str] = None) -> User:
+    with Session() as session:
+        new_user = User(
+            username=username,
+            name=name,
+            telegram_id=telegram_id,
+            password="000000",
+            is_superuser=False,
+            is_staff=False,
+            is_active=True,
+            first_name=name,
+            last_name='',
+            email='',
+        )
+
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+    return new_user

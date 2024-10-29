@@ -29,10 +29,27 @@ from tools import validate_username
 from backend.settings import EMAIL_HOST_USER
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     #permission_classes = [permissions.IsAuthenticated]
-    lookup_field = 'username'  # Lookup user by username instead of pk
+
+    def get_queryset(self):
+        userId = self.request.query_params.get('userId', None)
+        username = self.request.query_params.get('username', None)
+
+        if userId and username:
+            return User.objects.filter(telegram_id=userId, username=username)
+        elif userId:
+            return User.objects.filter(telegram_id=userId)
+        elif username:
+            return User.objects.filter(username=username)
+        else:
+            return User.objects.none()
+
+    def get_object(self):
+        queryset = self.get_queryset()
+        obj = generics.get_object_or_404(queryset)
+        return obj
+
 
 
 class PasswordChangeView(APIView):

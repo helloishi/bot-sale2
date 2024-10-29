@@ -1,88 +1,72 @@
-import os
+import requests
 import asyncio
-
-from pathlib import Path
-from aiogram import Bot, Dispatcher, types as t
-from aiogram.filters.command import Command
-from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.types import FSInputFile
-from loguru import logger
+from aiogram import Bot, Dispatcher, types, Router, F
+from aiogram.filters import Command
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.fsm.state import State, StatesGroup
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.storage.memory import MemoryStorage
+import logging
 
 from config import config
-from db import get_user_by_username
-from cards.apple import generate_apple_wallet_card
+from cards.apple import generate_apple_wallet_card, CARDS_DIR
+from db import create_user
 
-CARDS_DIR = "wallet_cards"
+# Initialize logging
+logging.basicConfig(level=logging.INFO)
 
+# Initialize bot and dispatcher
 bot = Bot(token=config.bot_token.get_secret_value())
-dp = Dispatcher()
+storage = MemoryStorage()
+dp = Dispatcher(storage=storage)
 
+# Create a router instance
+router = Router()
 
-@dp.message(Command("start"))
-async def cmd_start(message: t.Message):
+# Define the states
+class CreateAppleCard(StatesGroup):
+    waiting_for_name = State()
+
+# Register the "start" command handler
+@router.message(Command("start"))
+async def cmd_start(message: types.Message):
+    response = "Привет и добро пожаловать! Чтобы посмотреть все акции и скидки, нужно сначала получить карту лояльности."
+
+    keyboard = [
+        [KeyboardButton(text="Карта привилегий")],
+    ]
+    reply_keyboard = ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+
+    await message.answer(response, reply_markup=reply_keyboard)
+
+@router.message(F.text == "Карта привилегий")
+async def create_apple_card_request(message: types.Message, state: FSMContext):
+    await message.answer("Введите ваше имя для создания Apple карты:")
+    await state.set_state(CreateAppleCard.waiting_for_name)
+
+@router.message(CreateAppleCard.waiting_for_name)
+async def process_name(message: types.Message, state: FSMContext):
+    name = message.text
     username = message.from_user.username
+    telegram_id = message.from_user.id
 
-    logger.info(username)
+    create_user(
+        username,
+        name, 
+        telegram_id,
+    )
 
-    if not username:
-        await message.answer("Вы пока не установили ник!")
-        return 
+    await state.update_data(user_name=name)
 
-    username = username.lower()
-    user_in_base = get_user_by_username(username)
-    builder = InlineKeyboardBuilder()
-    response = None
+    await message.answer(f"Спасибо, {name}. Процесс создания Apple карты начат.")
+    await state.clear()
 
-    if user_in_base:
-        personal_link = f'{config.web_app_link}{username}'
-        web_app = t.WebAppInfo(url=personal_link)
-
-        builder.row(
-            t.InlineKeyboardButton(
-                text='Смотреть акции тут',
-                web_app=web_app
-            )
-        )
-
-        builder.row(
-            t.InlineKeyboardButton(
-                text='Карта привелегий',
-                url=config.card_link,
-            )
-        )
-
-        response = """Это карта привилегий от канала @MoscowMap\nЧтобы воспользоваться акциями - нужна регистрация: t.me/moscowbenefit_bot/mosbotfit"""
-    else:
-        builder.row(
-            t.InlineKeyboardButton(
-                text='Cсылка',
-                url=config.login_link
-            )
-        )
-
-        response = "Зарегистрируйтесь по ссылке, далее перейдите в бота и напишите /start"
-
-    await message.answer(response, reply_markup=builder.as_markup())
-
-@dp.message(Command('create_apple_card'))
-async def create_card(message: t.Message) -> None:
-    username = message.from_user.username
-
-    logger.info(f'Start creating card for {username}')
-    
-    generate_apple_wallet_card(username)
-    card_path = Path(__file__).parent / CARDS_DIR / f'{username}.pkpass'
-
-    logger.info(card_path)
-
-    if os.path.exists(card_path):
-        card = FSInputFile(card_path)
-        await bot.send_document(chat_id=message.chat.id, document=card)
+dp.include_router(router)
 
 async def main():
+    # Initialize the bot and dispatcher
     await dp.start_polling(bot)
 
+# Entry point
 if __name__ == "__main__":
-    logger.info("Start polling...")
-    asyncio.run(main()) 
-
+    asyncio.run(main())

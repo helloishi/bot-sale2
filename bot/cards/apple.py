@@ -5,28 +5,31 @@ from dotenv import load_dotenv
 from loguru import logger
 
 from db import get_user_by_username
-from .passbook.passbook.models import Pass, Barcode, StoreCard
+from .passbook.passbook.models import *
 
-CARDS_PATH = "wallet_cards"
-SAVE_PATH_FOR_CARDS = Path(__file__).parent.parent / CARDS_PATH
+CARDS_DIR = "wallet_cards"
+SAVE_PATH_FOR_CARDS = Path(__file__).parent.parent / CARDS_DIR
 load_dotenv()
 
 
 def generate_apple_wallet_card(
-    username: str
+    name: str,
+    username: str,
 ) -> None:
-    name = username
     user = get_user_by_username(username)
     
-    if user:
-        logger.info(f'Got name {user.name} for user {username}')
+    if not user:
+        return
 
-        name = user.name
+    user_id = user.id
 
-        logger.info(f'Setting name to {name}')
+    cardInfo = Coupon()
+    cardInfo.addSecondaryField('', name, 'Имя')
+    cardInfo.addSecondaryField('', user_id, 'Номер')
+    cardInfo.addHeaderField('статус карты', 'ПРЕМИУМ', 'статус карты')
 
-    cardInfo = StoreCard()
-    cardInfo.addPrimaryField('Name', name, '')
+    for field in cardInfo.secondaryFields:
+        field.textAlignment = Alignment.CENTER
 
     organizationName = 'MOSCOW CARD TM' 
     passTypeIdentifier = os.getenv("APPLE_TYPE_IDENTIFIER", None) 
@@ -36,15 +39,16 @@ def generate_apple_wallet_card(
         passTypeIdentifier=passTypeIdentifier, \
         organizationName=organizationName, \
         teamIdentifier=teamIdentifier)
-    passfile.serialNumber = '1234567' 
-    passfile.barcode = Barcode(message = 'Barcode message')    
-    passfile.backgroundColor = '#BB0000'
+
+    passfile.backgroundColor = '#FF3040'
     passfile.foregroundColor = '#FFFFFF'
-    
+    passfile.labelColor = '#FFFFFF'
+
     # Including the icon and logo is necessary for the passbook to be valid.
-    passfile.addFile('icon.png', open('./cards/images/icon.png', 'rb'))
+    passfile.addFile('strip.png', open('./cards/images/background.png', 'rb'))
     passfile.addFile('logo.png', open('./cards/images/logo.png', 'rb'))
-    
+    passfile.addFile('icon.png', open('./cards/images/icon.png', 'rb'))
+
     save_path = SAVE_PATH_FOR_CARDS / f'{username}.pkpass'
 
     passfile.create('./cards/keys_certs/pass.pem', 

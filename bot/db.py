@@ -26,8 +26,6 @@ Session = sessionmaker(
 def get_user_by_username(username: str) -> Optional[User]:
     with Session() as session:
         user = session.query(User).filter(User.username == username).first()
-    
-    print(user.name)
 
     return user or None
 

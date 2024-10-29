@@ -41,7 +41,7 @@ async def cmd_start(message: types.Message):
 
 @router.message(F.text == "Карта привилегий")
 async def create_apple_card_request(message: types.Message, state: FSMContext):
-    await message.answer("Введите ваше имя для создания Apple карты:")
+    await message.answer("Введите ваше имя карты:")
     await state.set_state(CreateAppleCard.waiting_for_name)
 
 @router.message(CreateAppleCard.waiting_for_name)
@@ -61,7 +61,7 @@ async def process_name(message: types.Message, state: FSMContext):
 
     await state.update_data(user_name=name)
 
-    await message.answer(f"Спасибо, {name}. Процесс создания Apple карты начат.")
+    await message.answer(f"Спасибо, {name}. Процесс создания карты начат.")
     await state.clear()
 
 dp.include_router(router)

@@ -110,6 +110,8 @@ class DiscountViewByPlaceType(APIView):
         is_site = request.query_params.get('is_site', None)
         is_bot = request.query_params.get('is_bot', None)
         telegram_id = request.query_params.get('userId', None)
+
+        username = validate_username(username)
                 
         user = None
         

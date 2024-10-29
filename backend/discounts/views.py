@@ -113,18 +113,23 @@ class DiscountViewByPlaceType(APIView):
                 
         user = None
         
+        # Retrieve the user by username
         if username:
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 pass
         
+        # If not found by username, try by telegram_id
         if not user and telegram_id:
             try:
                 user = User.objects.get(telegram_id=telegram_id)
             except User.DoesNotExist:
                 return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
 
+        print(user)
+
+        # Apply filters to the discounts
         filterset = DiscountFilter(request.GET, queryset=Discount.objects.all())
         if not filterset.is_valid():
             return Response(filterset.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -132,11 +137,14 @@ class DiscountViewByPlaceType(APIView):
         now = timezone.now().date()
         discounts = filterset.qs.filter(start_date__lte=now, end_date__gt=now)
 
+        # Filter discounts based on the provided place_type
         if place_type:
             discounts = discounts.filter(place_type=place_type)
 
+        # Order the discounts
         discounts = discounts.order_by("order")
         
+        # Serialize the discounts and include the user in the context
         serializer = DiscountSerializer(discounts, many=True, context={'request': request, 'user': user})
 
         return Response(serializer.data, status=status.HTTP_200_OK)

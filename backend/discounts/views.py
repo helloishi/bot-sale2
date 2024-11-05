@@ -110,14 +110,13 @@ class DiscountViewByPlaceType(APIView):
         is_site = request.query_params.get('is_site', None)
         is_bot = request.query_params.get('is_bot', None)
         telegram_id = request.query_params.get('userId', None)
-
-        username = validate_username(username)
                 
         user = None
         
         # Retrieve the user by username
         if username:
             try:
+                username = validate_username(username)
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 pass

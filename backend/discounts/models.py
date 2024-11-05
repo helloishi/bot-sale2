@@ -33,6 +33,7 @@ class Discount(DateMixin):
     order = models.IntegerField(_("Номер в боте"), default=0)
     show_in_bot = models.BooleanField(_("Отображение в боте"), default=False)
     show_on_site = models.BooleanField(_("Отображение на сайте"), default=True)
+    url = models.CharField(_("Ссылка партнера"), blank=True, default='')
 
     @property
     def is_active(self):

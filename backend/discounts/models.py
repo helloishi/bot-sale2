@@ -49,7 +49,7 @@ class Discount(DateMixin):
     url = models.CharField(_("Ссылка партнера"), blank=True, default='')
 
     locations = models.ManyToManyField("Place", verbose_name=_("Локации скидки"), 
-            blank=True, default='')
+            blank=True, default='', null=True)
 
     @property
     def is_active(self):

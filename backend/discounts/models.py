@@ -5,6 +5,19 @@ from django.utils.translation import gettext_lazy as _
 
 from backend.models import DateMixin
 
+class Place(DateMixin):
+    class Meta:
+        verbose_name = _("Место")
+        verbose_name_plural = _("Места")
+
+    id = models.AutoField(_("ID"), primary_key=True)
+    name = models.CharField(_("Название"), default='', blank=True)
+    lat = models.FloatField(_("Широта"), blank=True)
+    lon = models.FloatField(_("Долгота"), blank=True)
+
+    def __str__(self):
+        return self.name
+
 class Discount(DateMixin):
     class Meta:
         verbose_name = _("Скидка")
@@ -34,6 +47,9 @@ class Discount(DateMixin):
     show_in_bot = models.BooleanField(_("Отображение в боте"), default=False)
     show_on_site = models.BooleanField(_("Отображение на сайте"), default=True)
     url = models.CharField(_("Ссылка партнера"), blank=True, default='')
+
+    locations = models.ManyToManyField("Place", verbose_name=_("Локации скидки"), 
+            blank=True, default='')
 
     @property
     def is_active(self):

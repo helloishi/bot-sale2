@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 
 from user.models import User
-from .models import Discount
+from .models import Discount, Place
 from .serializers import *
 from .filters import DiscountFilter
 from tools import validate_username
@@ -103,6 +103,19 @@ class UserFavoriteDiscountsView(APIView):
 
         return Response(serializer.data)
 
+class PlaceView(APIView):
+    def get(self, request):
+        id_ = request.query_params.get("id", None)
+
+        qs = Place.objects.all()
+
+        if id_:
+            qs = qs.filter(id=id_)
+
+        serializer = PlaceSerializer(qs, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 class DiscountViewByPlaceType(APIView):
     def get(self, request):
         place_type = request.query_params.get('place_type', None)
@@ -153,3 +166,7 @@ class DiscountViewByPlaceType(APIView):
 class DiscountDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Discount.objects.all()
     serializer_class = DiscountSerializer
+
+class PlaceDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Place.objects.all()
+    serializer_class = PlaceSerializer

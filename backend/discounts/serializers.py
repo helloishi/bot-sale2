@@ -1,11 +1,16 @@
 from rest_framework import serializers
-from .models import Discount
+from .models import Discount, Place
 from user.models import User
 
 class FavoriteDiscountSerializer(serializers.Serializer):
     discount_id = serializers.IntegerField()
     username = serializers.CharField()
     userId = serializers.IntegerField()
+
+class PlaceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Place
+        fields = '__all__'
 
 class DiscountSerializer(serializers.ModelSerializer):
     is_favorite = serializers.SerializerMethodField()

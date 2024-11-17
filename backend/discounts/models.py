@@ -15,6 +15,10 @@ class Place(DateMixin):
     lat = models.FloatField(_("Широта"), blank=True)
     lon = models.FloatField(_("Долгота"), blank=True)
 
+    discounts = models.ManyToManyField("Discount", verbose_name=_("Скидки"),
+        blank=True, default='', null=True
+    )
+
     def __str__(self):
         return self.name
 
@@ -33,7 +37,7 @@ class Discount(DateMixin):
         OTHER = "OTHR", _("Другое")
 
     id = models.AutoField(_("ID"), primary_key=True)
-    place = models.CharField(_("Место"), max_length=50)
+    place_name = models.CharField(_("Место"), max_length=50)
 
     image = models.ImageField(_("Картинка"), upload_to='images', blank=True)
     description = models.TextField(_("Описание"))

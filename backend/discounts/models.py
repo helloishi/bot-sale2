@@ -51,6 +51,7 @@ class Discount(DateMixin):
     show_in_bot = models.BooleanField(_("Отображение в боте"), default=False)
     show_on_site = models.BooleanField(_("Отображение на сайте"), default=True)
     url = models.CharField(_("Ссылка партнера"), blank=True, default='')
+    backpage_text = models.CharField(_("Текст на обороте"), blank=True, default='')
 
     locations = models.ManyToManyField("Place", verbose_name=_("Локации скидки"), 
             blank=True, default='', null=True)

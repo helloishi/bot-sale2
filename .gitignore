@@ -9,3 +9,4 @@ images
 backend/cards/*
 wallet_cards
 */**/keys_certs/
+.idea

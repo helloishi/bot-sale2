@@ -122,7 +122,7 @@ async def process_new_name(message: types.Message, state: FSMContext):
 
 # Константы
 ADMIN_ID = (438096, 122080193)  # ID администратора
-DELAY_BETWEEN_MESSAGES = 88200 / 100  # 24.5 часа = 88200 секунд, примерно 882 секунды на сообщение
+DELAY_BETWEEN_MESSAGES = 3600 / 998  # секунды/сообщения=3.6 секунды на сообщение
 
 # Добавляем новое состояние для рассылки
 class SpamStates(StatesGroup):
